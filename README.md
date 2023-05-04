@@ -9,25 +9,7 @@ The SilverStripe mailable files module allows you to create a form with checkbox
 
 ## Installation
 
-Install the module using composer by adding the module repository and a GitHub OAuth token with repo access to your `composer.json` file.
-
-```json
-{
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/Violet88github/silverstripe-mailable-files"
-        }
-    ],
-    "config": {
-        "github-oauth": {
-            "github.com": "1234567890abcdef1234567890abcdef12345678" // Github OAuth token with repo access
-        }
-    }
-}
-```
-
-Then install the module using composer.
+Install the module using composer.
 
 ```bash
 composer require violet88/silverstripe-mailable-files
