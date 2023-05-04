@@ -11,6 +11,7 @@ use SilverStripe\Forms\FormAction;
 use SilverStripe\Forms\RequiredFields;
 use SilverStripe\Forms\TextField;
 use SilverStripe\ORM\DataExtension;
+use Violet88\MailableFilesModule\DataObjects\MailableFilesFormSubmission;
 
 class MailableFilesPageControllerExtension extends DataExtension
 {
@@ -30,8 +31,8 @@ class MailableFilesPageControllerExtension extends DataExtension
             return Form::create($this->owner, 'doProcessMailables', $fields, $actions);
 
         $fields->push(
-            EmailField::create('Email', _t(__CLASS__, 'Email'))
-                ->setAttribute('placeholder', _t(__CLASS__, 'EmailPlaceholder'))
+            EmailField::create('Email', 'E-mail adres')
+                ->setAttribute('placeholder', 'john.doe@example.com')
                 ->setAttribute('required', 'required')
                 ->setAttribute('type', 'email')
         );
@@ -39,13 +40,13 @@ class MailableFilesPageControllerExtension extends DataExtension
         $fields->push(
             CheckboxSetField::create(
                 'MailableFiles',
-                _t(__CLASS__, 'MailableFiles'),
+                'Bestanden',
                 $page->MailableFiles()->map('ID', 'Name')
             )
                 ->setAttribute('required', 'required')
         );
 
-        $actions->push(FormAction::create('doProcessMailables', _t(__CLASS__, 'Request')));
+        $actions->push(FormAction::create('doProcessMailables', 'Aanvragen'));
 
         return Form::create($this->owner, 'MailableFilesForm', $fields, $actions, $required);
     }
@@ -59,18 +60,24 @@ class MailableFilesPageControllerExtension extends DataExtension
         $email = Email::create()
             ->setFrom('no-reply@' . $_SERVER['HTTP_HOST'])
             ->setTo($email)
-            ->setSubject(_t(__CLASS__, 'EmailSubject'))
+            ->setSubject('Jouw opgevraagde bestanden van ' . $_SERVER['HTTP_HOST'])
             ->setData([
-                'Files' => array_column($files->toArray(), 'Name'),
+                'Files' => $files,
                 'Email' => $email,
-            ]);
+            ])
+            ->setHTMLTemplate('Violet88/MailableFilesModule/Emails/Html/Request')
+            ->setPlainTemplate('Violet88/MailableFilesModule/Emails/Plain/Request');
 
         foreach ($files as $file)
             $email->addAttachmentFromData($file->File->getString(), $file->File->Name, $file->File->getMimeType());
 
-        if ($email->send())
+        if ($email->send()) {
             $form->sessionMessage(_t(__CLASS__, 'RequestSent'), 'success');
-        else
+            MailableFilesFormSubmission::create([
+                'Email' => $data['Email'],
+                'MailableFilesIds' => implode(',', $data['MailableFiles']),
+            ])->write();
+        } else
             $form->sessionMessage(_t(__CLASS__, 'RequestFailed'), 'danger');
 
         return $this->owner->redirectBack();

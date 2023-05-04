@@ -1,0 +1,10 @@
+---
+name: mailablefiles-page
+---
+Violet88\MailableFilesModule\Pages\MailableFilesPage:
+    extensions:
+        - Violet88\MailableFilesModule\DataExtensions\MailableFilesPageExtension
+
+Violet88\MailableFilesModule\Pages\MailableFilesPageController:
+    extensions:
+        - Violet88\MailableFilesModule\DataExtensions\MailableFilesPageControllerExtension
