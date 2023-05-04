@@ -1,5 +1,5 @@
 {
-    "name": "violet88/silverstripe-mailed-files",
+    "name": "violet88/silverstripe-mailable-files",
     "description": "Adds a form in which the user can select which files they want in their mailbox.",
     "type": "silverstripe-vendormodule",
     "keywords": [
