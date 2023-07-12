@@ -30,6 +30,10 @@ class MailableFilesPageExtension extends DataExtension
         'MailableFiles'
     ];
 
+    private static $defaults = [
+        'MailFrom' => 'no-reply@example.com'
+    ];
+
     public function updateCMSFields(FieldList $fields)
     {
         $fields->addFieldsToTab('Root.MailableFiles', [
@@ -44,10 +48,12 @@ class MailableFilesPageExtension extends DataExtension
         ]);
     }
 
-    public function validate(ValidationResult $validationResult)
+    public function onBeforeWrite()
     {
-        // Validate email
-        if (!filter_var($this->owner->MailFrom, FILTER_VALIDATE_EMAIL))
-            $validationResult->addFieldError('MailFrom', 'Please enter a valid email address.');
+        parent::onBeforeWrite();
+
+        if (!$this->owner->MailFrom) {
+            $this->owner->MailFrom = 'no-reply@' . $_SERVER['HTTP_HOST'];
+        }
     }
 }
