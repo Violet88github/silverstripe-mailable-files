@@ -58,7 +58,7 @@ class MailableFilesPageControllerExtension extends DataExtension
         $email = $data['Email'];
 
         $email = Email::create()
-            ->setFrom('no-reply@' . $_SERVER['HTTP_HOST'])
+            ->setFrom($page->MailFrom ? $page->MailFrom : 'no-reply@' . $_SERVER['HTTP_HOST'])
             ->setTo($email)
             ->setSubject('Jouw opgevraagde bestanden van ' . $_SERVER['HTTP_HOST'])
             ->setData([

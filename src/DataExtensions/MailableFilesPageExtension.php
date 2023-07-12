@@ -12,6 +12,7 @@ use SilverStripe\Forms\GridField\GridFieldConfig;
 use SilverStripe\Forms\GridField\GridFieldConfig_RecordEditor;
 use SilverStripe\Forms\TextField;
 use SilverStripe\ORM\DataExtension;
+use SilverStripe\ORM\ValidationResult;
 use UndefinedOffset\SortableGridField\Forms\GridFieldSortableRows;
 use Violet88\MailableFilesModule\DataObjects\MailableFile;
 
@@ -41,5 +42,12 @@ class MailableFilesPageExtension extends DataExtension
                 GridFieldConfig_RecordEditor::create()
             )
         ]);
+    }
+
+    public function validate(ValidationResult $validationResult)
+    {
+        // Validate email
+        if (!filter_var($this->owner->MailFrom, FILTER_VALIDATE_EMAIL))
+            $validationResult->addFieldError('MailFrom', 'Please enter a valid email address.');
     }
 }
