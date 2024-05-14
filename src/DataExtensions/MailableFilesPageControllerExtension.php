@@ -71,14 +71,17 @@ class MailableFilesPageControllerExtension extends DataExtension
         foreach ($files as $file)
             $email->addAttachmentFromData($file->File->getString(), $file->File->Name, $file->File->getMimeType());
 
-        if ($email->send()) {
+        try {
+            $email->send();
             $form->sessionMessage(_t(__CLASS__, 'RequestSent'), 'success');
             MailableFilesFormSubmission::create([
                 'Email' => $data['Email'],
                 'MailableFilesIds' => implode(',', $data['MailableFiles']),
             ])->write();
-        } else
+        } catch (\Exception $e) {
+            error_log($e->getMessage());
             $form->sessionMessage(_t(__CLASS__, 'RequestFailed'), 'danger');
+        }
 
         return $this->owner->redirectBack();
     }
